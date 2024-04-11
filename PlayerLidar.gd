@@ -26,17 +26,17 @@ var movement
 
 var max_random_rotation = 10
 var scanning = false
-var LIDARSize = 10000
-var MaxPoints = LIDARSize * 100
+var lidar_size = 10000
+var max_points = lidar_size * 100
 @export var LIDARMeshScene : PackedScene
-@onready var LIDARContainer = $LIDARContainer
-var currentPoint = 0
+@onready var lidar_container = $LIDARContainer
+var current_point = 0
 var PointPerSecond = 2000
-@onready var LidarRay = $Head/LidarRay
-@export var EnemyColor : Color
-@export var PointColor : Color
-var fullScanSize = 1000
-var fullScanProgress = 0
+@onready var lidar_ray = $Head/LidarRay
+@export var enemy_color : Color
+@export var point_color : Color
+var full_scan_size = 1000
+var full_scan_progress = 0
 
 func _ready():
 	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
@@ -63,7 +63,7 @@ func _process(delta):
 	Lines.rotation = -Hand.rotation
 
 	if (Input.is_action_just_pressed("restart")):
-		RemoveLIDARMeshes()
+		remove_lidar_meshes()
 		pass
 
 	if (Input.is_action_just_pressed("toggle_camera")):
@@ -92,7 +92,7 @@ func _physics_process(delta):
 		acceleration = floor_acceleration
 		gravity_vector = velocity
 
-	var direction_not_rotated = Vector3(Input.get_action_strength("move_r") - Input.get_action_strength("move_l"),
+	var _direction_not_rotated = Vector3(Input.get_action_strength("move_r") - Input.get_action_strength("move_l"),
 	0, Input.get_action_strength("move_fw") - Input.get_action_strength("move_bw"))
 
 	var dir_node = self
@@ -113,7 +113,7 @@ func _physics_process(delta):
 
 	var acutalSepeed
 	if (scanning):
-		acutalSepeed = move_speed / 3
+		acutalSepeed = move_speed / 3.0
 	else:
 		acutalSepeed = move_speed
 
@@ -150,25 +150,25 @@ func rotate_camera(h, v):
 
 #LIDAR Part (Player.LIDAR.cs)
 
-func CreateLIDARMesh() -> MultiMeshInstance3D:
+func create_lidar_mesh() -> MultiMeshInstance3D:
 	var mesh = LIDARMeshScene.instantiate() as MultiMeshInstance3D
 
 	mesh.multimesh = mesh.multimesh.duplicate() as MultiMesh
-	mesh.multimesh.instance_count = LIDARSize
+	mesh.multimesh.instance_count = lidar_size
 	mesh.multimesh.visible_instance_count = 0
 
-	LIDARContainer.add_child(mesh)
+	lidar_container.add_child(mesh)
 	mesh.set_as_top_level(true)
 	mesh.global_transform = Transform3D()
 
 	return mesh
 	
-func RemoveLIDARMeshes():
-	currentPoint = 0
-	for m in LIDARContainer.get_children():
+func remove_lidar_meshes():
+	current_point = 0
+	for m in lidar_container.get_children():
 		m.queue_free()
 		
-func CircleScan(delta):
+func circle_scan(delta):
 	if (scanning): return
 
 	var ps = int(ceil(PointPerSecond * delta))
@@ -180,21 +180,21 @@ func CircleScan(delta):
 
 		rv *= max_random_rotation;
 
-		LidarRay.rotation_degrees = Vector3(rv.x, rv.y, 0);
+		lidar_ray.rotation_degrees = Vector3(rv.x, rv.y, 0);
 
-		var start = LidarRay.global_transform.origin;
-		var end = start + (-LidarRay.global_transform.basis.z * 200);
+		var start = lidar_ray.global_transform.origin;
+		var end = start + (-lidar_ray.global_transform.basis.z * 200);
 
 		PutPoint(start, end);
 		
 func PutPoint(start, end):
-	var spaceState = get_world_3d().direct_space_state
+	var space_state = get_world_3d().direct_space_state
 	var params = PhysicsRayQueryParameters3D.new()
 	params.from = start
 	params.to = end
 	params.exclude = []
 	params.collision_mask = 1
-	var col = spaceState.intersect_ray(params)
+	var col = space_state.intersect_ray(params)
 
 	if (col != null and col.size() > 0):
 		var hit = Vector3(col.position)
@@ -210,40 +210,40 @@ func PutPoint(start, end):
 
 		var trans = Transform3D(Basis.IDENTITY, hit)
 
-		var isEnemy = body.is_in_group("Enemy")
+		var is_enemy = body.is_in_group("Enemy")
 
 		var clr
-		if (isEnemy):
-			clr = EnemyColor
+		if (is_enemy):
+			clr = enemy_color
 		else:
-			clr = PointColor
-		var maxOffset = 0.2
+			clr = point_color
+		var max_offset = 0.2
 			
 		clr += Color( 
-			float(remap(randf_range(0, 1), 0, 1, -maxOffset, maxOffset)),
-			float(remap(randf_range(0, 1), 0, 1, -maxOffset, maxOffset)),
-			float(remap(randf_range(0, 1), 0, 1, -maxOffset, maxOffset))
+			float(remap(randf_range(0, 1), 0, 1, -max_offset, max_offset)),
+			float(remap(randf_range(0, 1), 0, 1, -max_offset, max_offset)),
+			float(remap(randf_range(0, 1), 0, 1, -max_offset, max_offset))
 			)
 
-		setPoint(currentPoint, trans, clr);
+		set_point(current_point, trans, clr);
 
-		currentPoint = currentPoint + 1
-		if (currentPoint == MaxPoints): currentPoint = 0
+		current_point = current_point + 1
+		if (current_point == max_points): current_point = 0
 		
-func FullScan():
+func full_scan():
 	if (scanning): return
 	scanning = true
 
-func setPoint(idx, trans, col):
-	var meshid = idx / LIDARSize;
+func set_point(idx, trans, col):
+	var meshid = idx / lidar_size;
 
-	var childcount = LIDARContainer.get_child_count();
+	var childcount = lidar_container.get_child_count();
 	if (meshid >= childcount):
-		CreateLIDARMesh();
+		create_lidar_mesh();
 
-	var mesh = (LIDARContainer.get_child(meshid) as MultiMeshInstance3D).multimesh;
+	var mesh = (lidar_container.get_child(meshid) as MultiMeshInstance3D).multimesh;
 
-	var pointid = idx % LIDARSize;
+	var pointid = idx % lidar_size;
 	mesh.visible_instance_count = max(mesh.visible_instance_count, pointid + 1);
 	mesh.set_instance_transform(pointid, trans);
 	mesh.set_instance_color(pointid, col);
@@ -253,20 +253,20 @@ func physics_lidar(delta):
 	#Lines.get_mesh().surface_begin(Mesh.PRIMITIVE_LINES)
 	if (!scanning):
 		if (Input.is_action_pressed("attack1")):
-			CircleScan(delta)
+			circle_scan(delta)
 		if (Input.is_action_just_pressed("attack2")):
-			FullScan()
+			full_scan()
 	else:
 		var pointcount = int(ceil(PointPerSecond * delta))
 		pointcount *= 4
 
 		for i in pointcount:
-			var y = (fullScanProgress + i) / fullScanSize
-			var x = (fullScanProgress + i) % fullScanSize
+			var y = (full_scan_progress + i) / float(full_scan_size)
+			var x = (full_scan_progress + i) % full_scan_size
 
 			var screenpos = Vector2(
-				x / float(fullScanSize),
-				y / float(fullScanSize))
+				x / float(full_scan_size),
+				y / float(full_scan_size))
 			screenpos *= Vector2(get_tree().root.size)
 			screenpos += Vector2(remap(randf_range(0, 1.0) , 0, 1, -2, 2), remap(randf_range(0, 1.0) , 0, 1, -2, 2))
 
@@ -275,8 +275,8 @@ func physics_lidar(delta):
 
 			PutPoint(start, end)
 
-			fullScanProgress += pointcount
-			if (fullScanProgress >= fullScanSize * fullScanSize):
-				fullScanProgress = 0
+			full_scan_progress += pointcount
+			if (full_scan_progress >= full_scan_size * full_scan_size):
+				full_scan_progress = 0
 				scanning = false
 		#Lines.get_mesh().surface_end()
