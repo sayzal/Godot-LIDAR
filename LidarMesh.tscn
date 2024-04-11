@@ -1,0 +1,23 @@
+[gd_scene load_steps=4 format=3 uid="uid://li2oqdcmn5b7"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_atfvt"]
+transparency = 1
+blend_mode = 1
+vertex_color_use_as_albedo = true
+billboard_mode = 1
+
+[sub_resource type="QuadMesh" id="QuadMesh_rikdd"]
+lightmap_size_hint = Vector2i(2, 2)
+material = SubResource("StandardMaterial3D_atfvt")
+size = Vector2(0.02, 0.02)
+
+[sub_resource type="MultiMesh" id="MultiMesh_xvl6j"]
+transform_format = 1
+use_colors = true
+instance_count = 1
+mesh = SubResource("QuadMesh_rikdd")
+buffer = PackedFloat32Array(2.10195e-44, 2.10195e-44, 1.4013e-45, 0, 2.24208e-44, 3.08286e-44, 2.38221e-44, 2.24208e-44, 3.22299e-44, 3.08286e-44, 2.38221e-44, 2.94273e-44, 2.52234e-44, 2.38221e-44, 3.08286e-44, 2.94273e-44)
+
+[node name="MultiMeshInstance3D" type="MultiMeshInstance3D"]
+layers = 3
+multimesh = SubResource("MultiMesh_xvl6j")

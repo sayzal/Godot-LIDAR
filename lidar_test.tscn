@@ -1,0 +1,42 @@
+[gd_scene load_steps=8 format=3 uid="uid://c5pukn6n2xbj8"]
+
+[ext_resource type="PackedScene" uid="uid://nwevb442lxu5" path="res://player.tscn" id="1_p1fcg"]
+[ext_resource type="Script" path="res://PlayerLidar.gd" id="2_kqt2i"]
+[ext_resource type="PackedScene" uid="uid://li2oqdcmn5b7" path="res://LidarMesh.tscn" id="3_i2551"]
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_27olf"]
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_46hor"]
+
+[sub_resource type="Environment" id="Environment_xq5tp"]
+background_mode = 2
+ambient_light_source = 2
+ambient_light_color = Color(1, 1, 1, 1)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_k758r"]
+
+[node name="Node3D" type="Node3D"]
+
+[node name="MeshInstance3D2" type="MeshInstance3D" parent="."]
+transform = Transform3D(13.6209, 0, 0, 0, 13.6209, 0, 0, 0, 13.6209, 16.9815, 0, 0)
+layers = 3
+mesh = SubResource("CylinderMesh_27olf")
+
+[node name="Player" parent="." instance=ExtResource("1_p1fcg")]
+script = ExtResource("2_kqt2i")
+LIDARMeshScene = ExtResource("3_i2551")
+EnemyColor = Color(0.847059, 0, 0, 1)
+PointColor = Color(0.760784, 0.372549, 1, 1)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+transform = Transform3D(163.746, 0, 0, 0, 163.746, 0, 0, 0, 163.746, 0, -3.83582, 0)
+mesh = SubResource("PlaneMesh_46hor")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_xq5tp")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="."]
+transform = Transform3D(13.6209, 0, 0, 0, 13.6209, 0, 0, 0, 13.6209, -2.41021, 0, -15.3743)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBody3D"]
+shape = SubResource("BoxShape3D_k758r")

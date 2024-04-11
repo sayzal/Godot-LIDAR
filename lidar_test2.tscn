@@ -1,0 +1,90 @@
+[gd_scene load_steps=12 format=3 uid="uid://1h6f5rwnr2wm"]
+
+[ext_resource type="PackedScene" uid="uid://nwevb442lxu5" path="res://player.tscn" id="1_e0k5f"]
+[ext_resource type="Script" path="res://PlayerLidar.gd" id="2_xoda7"]
+[ext_resource type="PackedScene" uid="uid://li2oqdcmn5b7" path="res://LidarMesh.tscn" id="3_j1o0e"]
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_s44qv"]
+size = Vector2(51.33, 22.865)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_nkkeo"]
+size = Vector3(51.415, 0.18, 22.945)
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_0okld"]
+
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_p7yuu"]
+
+[sub_resource type="Environment" id="Environment_mwfyf"]
+background_mode = 2
+ambient_light_source = 2
+ambient_light_color = Color(1, 1, 1, 1)
+
+[sub_resource type="PrismMesh" id="PrismMesh_ytrpy"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_nqlh6"]
+
+[sub_resource type="PrismMesh" id="PrismMesh_6ol08"]
+
+[node name="LidarTest2" type="Node3D"]
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+mesh = SubResource("PlaneMesh_s44qv")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="MeshInstance3D"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="MeshInstance3D/StaticBody3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.090707, 0)
+shape = SubResource("BoxShape3D_nkkeo")
+
+[node name="MeshInstance3D2" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.0433753, 0.999059, 0, -0.999059, 0.0433753, 0, 0, 11.2567)
+mesh = SubResource("PlaneMesh_s44qv")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="MeshInstance3D2"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="MeshInstance3D2/StaticBody3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.090707, 0)
+shape = SubResource("BoxShape3D_nkkeo")
+
+[node name="MeshInstance3D3" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, -0.0377426, -0.999287, 0, 0.999287, -0.0377426, 0, 0, -11.6998)
+mesh = SubResource("PlaneMesh_s44qv")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="MeshInstance3D3"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="MeshInstance3D3/StaticBody3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.090707, 0)
+shape = SubResource("BoxShape3D_nkkeo")
+
+[node name="Player" parent="." instance=ExtResource("1_e0k5f")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.75705, 1.84395, 1.06128)
+script = ExtResource("2_xoda7")
+LIDARMeshScene = ExtResource("3_j1o0e")
+EnemyColor = Color(1, 0, 0, 1)
+PointColor = Color(0.0941176, 0.54902, 0.807843, 1)
+
+[node name="MeshInstance3D4" type="MeshInstance3D" parent="."]
+transform = Transform3D(6.00277, 0, 0, 0, 6.13749, 0, 0, 0, 8.28648, -10.9186, 6.49468, -1.35016)
+mesh = SubResource("CylinderMesh_0okld")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="MeshInstance3D4"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="MeshInstance3D4/StaticBody3D"]
+shape = SubResource("CylinderShape3D_p7yuu")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_mwfyf")
+
+[node name="MeshInstance3D5" type="MeshInstance3D" parent="."]
+transform = Transform3D(4.24821, 0, 3.64824, 0, 5.59972, 0, -3.64824, 0, 4.24821, 15.3672, 2.82694, 0.0568252)
+mesh = SubResource("PrismMesh_ytrpy")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="MeshInstance3D5"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="MeshInstance3D5/StaticBody3D"]
+shape = SubResource("BoxShape3D_nqlh6")
+
+[node name="CSGMesh3D" type="CSGMesh3D" parent="." groups=["Enemy"]]
+transform = Transform3D(2.89767, 0, 0, 0, 2.89767, 0, 0, 0, 2.89767, 12.5959, 1.7282, -6.06503)
+use_collision = true
+mesh = SubResource("PrismMesh_6ol08")

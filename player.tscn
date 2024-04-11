@@ -1,0 +1,42 @@
+[gd_scene load_steps=6 format=3 uid="uid://nwevb442lxu5"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_06s51"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_f2ntk"]
+size = Vector3(0.2, 0.2, 0.84)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_fhtxr"]
+albedo_color = Color(1, 0.447059, 1, 1)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_p7atu"]
+albedo_color = Color(1, 0.564706, 0.498039, 1)
+
+[sub_resource type="ImmediateMesh" id="ImmediateMesh_kvgnp"]
+
+[node name="Player" type="CharacterBody3D"]
+
+[node name="LIDARContainer" type="Node3D" parent="."]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+shape = SubResource("CapsuleShape3D_06s51")
+
+[node name="Head" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.664273, 0)
+
+[node name="Camera3D" type="Camera3D" parent="Head"]
+cull_mask = 1048574
+
+[node name="LidarRay" type="Node3D" parent="Head"]
+
+[node name="Hand" type="Node3D" parent="Head"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.65122, -0.402747, -0.496756)
+
+[node name="Scanner" type="MeshInstance3D" parent="Head/Hand"]
+layers = 3
+mesh = SubResource("BoxMesh_f2ntk")
+surface_material_override/0 = SubResource("StandardMaterial3D_fhtxr")
+
+[node name="Lines" type="MeshInstance3D" parent="Head/Hand/Scanner"]
+layers = 3
+material_override = SubResource("StandardMaterial3D_p7atu")
+mesh = SubResource("ImmediateMesh_kvgnp")
