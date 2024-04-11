@@ -37,6 +37,7 @@ var PointPerSecond = 2000
 @export var point_color : Color
 var full_scan_size = 1000
 var full_scan_progress = 0
+@export var scanner_distance : int = 200
 
 func _ready():
 	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
@@ -183,7 +184,7 @@ func circle_scan(delta):
 		lidar_ray.rotation_degrees = Vector3(rv.x, rv.y, 0);
 
 		var start = lidar_ray.global_transform.origin;
-		var end = start + (-lidar_ray.global_transform.basis.z * 200);
+		var end = start + (-lidar_ray.global_transform.basis.z * scanner_distance);
 
 		PutPoint(start, end);
 		
@@ -271,7 +272,7 @@ func physics_lidar(delta):
 			screenpos += Vector2(remap(randf_range(0, 1.0) , 0, 1, -2, 2), remap(randf_range(0, 1.0) , 0, 1, -2, 2))
 
 			var start = Camera.project_ray_origin(screenpos)
-			var end = start + (Camera.project_ray_normal(screenpos) * 2000)
+			var end = start + (Camera.project_ray_normal(screenpos) * scanner_distance)
 
 			PutPoint(start, end)
 
